@@ -47,9 +47,11 @@ class _SignInScreenState extends State<SignInScreen> {
         Constants.preferences?.setInt('USERID', data['userId']);
         Constants.preferences?.setInt('SubsidyPercentage', data['subsidy_percentage']);
         Constants.preferences?.setString('Username', data['name']);
+        setState(() {
+          isLoading = true;
+        });
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProductListScreen(
         )));
-
       }else{
         print("Failed");
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Login Failed")));
