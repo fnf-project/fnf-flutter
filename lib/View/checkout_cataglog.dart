@@ -56,29 +56,94 @@ class CheckoutCatalogCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
           children: [
-            const SizedBox(width: 20,),
-            Expanded(
-              child: Text(products.name.toString(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(width: 20,),
+                Expanded(
+                  child: Text(products.name.toString(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                ),
+
+                // IconButton(
+                //     onPressed: (){
+                //       controller.removeProduct(products, context);
+                //       if(controller.counter > 0) {
+                //         controller.counter--;
+                //       }
+                //     },
+                //     icon: const Icon(Icons.remove_circle)
+                // ),
+
+                Text('Qty  :  ${quantity}', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 22, color: Colors.black87),),
+
+                // IconButton(
+                //     onPressed: (){
+                //       controller.addProduct(products, context);
+                //     },
+                //     icon: const Icon(Icons.add_circle)
+                // ),
+
+
+              ],
             ),
-            Expanded(
-              child: Text(products.id.toString(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+            const SizedBox(height: 15.0,),
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Align(
+                alignment: Alignment.topLeft,
+                  child: Text("Rs" + " " + products.price.toString(), style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600, fontSize: 17),)),
             ),
-            IconButton(
-                onPressed: (){
-                  controller.removeProduct(products, context);
-                },
-                icon: const Icon(Icons.remove_circle)
-            ),
-            Text('${quantity}'),
-            IconButton(
-                onPressed: (){
-                  controller.addProduct(products, context);
-                },
-                icon: const Icon(Icons.add_circle)
-            ),
+            const SizedBox(height: 40,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  height: 35,
+                  width: 125,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.green, width: 1.0),
+                    borderRadius: BorderRadius.circular(13.0),
+                  ),
+                  child: MaterialButton(
+                    onPressed: (){
+                      controller.addProduct(products, context);
+                    },
+                    child: Row(
+                      children: const [
+                        Icon(Icons.add_circle, color: Colors.green,),
+                      SizedBox(width: 10,),
+                      Text("ADD", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                      ],
+                    )
+                  ),
+                  ),
+                Container(
+                  height: 35,
+                  width: 125,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.redAccent, width: 1.0),
+                    borderRadius: BorderRadius.circular(13.0),
+                  ),
+                  child: MaterialButton(
+                    onPressed: (){
+                            controller.removeProduct(products, context);
+                            // if(controller.counter > 0) {
+                            //   controller.counter--;
+                            // }
+                    },
+                    child: Row(
+                      children: const [
+                        Icon(Icons.remove_circle, color: Colors.red,),
+                        SizedBox(width: 10,),
+                        Text("REMOVE", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                      ],
+                    )
+                  ),
+                  ),
+              ],
+            )
           ],
         ),
       ),

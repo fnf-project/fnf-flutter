@@ -61,6 +61,12 @@ class _SignInScreenState extends State<SignInScreen> {
       });
     }catch(e){
       print(e.toString());
+      Get.snackbar(
+        'Network Error',
+        e.toString(),
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
     }
     setState(() {
       isLoading = false;
@@ -70,7 +76,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return isLoading ? CircularProgressIndicator() : Scaffold(
       backgroundColor: Colors.white,
       body: Form(
         key: formKey,

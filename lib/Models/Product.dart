@@ -22,6 +22,7 @@ class Product {
     _expiryDate = expiryDate;
 }
 
+
   Product.fromJson(dynamic json) {
     _id = json['id'];
     _name = json['name'];

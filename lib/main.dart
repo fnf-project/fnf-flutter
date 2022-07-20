@@ -9,12 +9,7 @@ import 'Auth/login_screen.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   Constants.preferences = await SharedPreferences.getInstance();
-  runApp(
-      GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-          home: MyApp()
-      )
-  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -23,7 +18,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Friend and Family',
       home: Constants.preferences?.getBool("loggedIn") == true
