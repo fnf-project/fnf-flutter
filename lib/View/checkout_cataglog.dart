@@ -28,7 +28,8 @@ class CheckoutCatalog extends StatelessWidget {
           ),
         ),
         ),
-        const Divider(color: Colors.black38, thickness: 1.4,)
+        const Divider(color: Colors.black38, thickness: 1.4,),
+
       ],
     );
   }
@@ -65,27 +66,7 @@ class CheckoutCatalogCard extends StatelessWidget {
                 Expanded(
                   child: Text(products.name.toString(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
                 ),
-
-                // IconButton(
-                //     onPressed: (){
-                //       controller.removeProduct(products, context);
-                //       if(controller.counter > 0) {
-                //         controller.counter--;
-                //       }
-                //     },
-                //     icon: const Icon(Icons.remove_circle)
-                // ),
-
-                Text('Qty  :  ${quantity}', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 22, color: Colors.black87),),
-
-                // IconButton(
-                //     onPressed: (){
-                //       controller.addProduct(products, context);
-                //     },
-                //     icon: const Icon(Icons.add_circle)
-                // ),
-
-
+                Text('Qty  :  ${quantity}', style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 22, color: Colors.black87),),
               ],
             ),
             const SizedBox(height: 15.0,),
@@ -93,7 +74,7 @@ class CheckoutCatalogCard extends StatelessWidget {
               padding: const EdgeInsets.only(left: 20),
               child: Align(
                 alignment: Alignment.topLeft,
-                  child: Text("Rs" + " " + products.price.toString(), style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600, fontSize: 17),)),
+                  child: Text("Rs" + " " + products.price.toString(), style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w600, fontSize: 17),)),
             ),
             const SizedBox(height: 40,),
             Row(
@@ -129,9 +110,6 @@ class CheckoutCatalogCard extends StatelessWidget {
                   child: MaterialButton(
                     onPressed: (){
                             controller.removeProduct(products, context);
-                            // if(controller.counter > 0) {
-                            //   controller.counter--;
-                            // }
                     },
                     child: Row(
                       children: const [

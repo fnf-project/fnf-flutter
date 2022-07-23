@@ -9,14 +9,14 @@ import 'package:fnf_project/Models/Product.dart';
 import 'package:fnf_project/Utils/shared_preference.dart';
 import 'package:fnf_project/View/checkout_screen.dart';
 import 'package:fnf_project/Controller/product_cart_controller.dart';
+import 'package:fnf_project/View/orders_detail_screen.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart' as http;
 
-import '../Models/CartModel.dart';
 
 class ProductListScreen extends StatefulWidget {
-  ProductListScreen({Key? key}) : super(key: key);
+  const ProductListScreen({Key? key}) : super(key: key);
 
   @override
   _ProductListScreenState createState() => _ProductListScreenState();
@@ -28,34 +28,28 @@ class _ProductListScreenState extends State<ProductListScreen> {
   // TODO GETTING TOKEN
   var token = Constants.preferences?.getString('Token');
 
-
-
-
   // TODO GETTING THE PRODUCTS FROM SERVER
   var data;
   List<Product> productList = [];
-  List<Products> cartItems = [];
-  Future<List<Product>> getProductsList() async{
+  Future<List<Product>> getProductsList() async {
     final response = await http.get(
-      Uri.parse('http://192.168.100.249:8081/api/products/'),
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json',
-      'Authorization': 'Token ${token}'
-    },
+      Uri.parse('http://192.168.100.240:5000/api/products/'),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+        'Authorization': 'Token ${token}'
+      },
     );
-     data = jsonDecode(response.body.toString());
-    if(response.statusCode == 200){
-      print("Data Get Successfully");
-      for(Map i in data){
-        productList.add(Product.fromJson(i));
+    data = jsonDecode(response.body.toString());
+    if (response.statusCode == 200) {
+      for (Map i in data) {
+          productList.add(Product.fromJson(i));
       }
       return productList;
-    }else{
+    } else {
       print("Failed");
-
-      return productList;
     }
+    return productList;
   }
 
   // TODO PREVENT FROM CLOSING THE APP ACCIDENTALLY
@@ -83,50 +77,63 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-
   // TODO LOGOUT CONFIRM FUNCTION
-  logoutFunction(){
+  logoutFunction() {
     return showDialog(
         context: context,
-        builder: (BuildContext context){
+        builder: (BuildContext context) {
           return AlertDialog(
             content: const Padding(
-              padding: EdgeInsets.only(left: 12.0),
-                child: Text("Do you want to logout?", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),)),
+                padding: EdgeInsets.only(left: 12.0),
+                child: Text(
+                  "Do you want to logout?",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
+                )),
             actions: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   MaterialButton(
                     color: Colors.redAccent,
-                    onPressed: (){
+                    onPressed: () {
                       Constants.preferences?.setBool("loggedIn", false);
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SignInScreen()));
                     },
-                    child: const Text("Yes", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                    child: const Text(
+                      "Yes",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
                   MaterialButton(
                     color: Colors.green,
-                    onPressed: (){
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProductListScreen()));
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProductListScreen()));
                     },
-                    child: const Text("No", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                    child: const Text(
+                      "No",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   )
                 ],
               )
             ],
           );
-        }
-    );
+        });
   }
 
-
-  // int counter = 0;
   int selectedIndex = 0;
-
 
   @override
   Widget build(BuildContext context) {
+    print("Hello World");
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
       child: Scaffold(
@@ -136,39 +143,55 @@ class _ProductListScreenState extends State<ProductListScreen> {
           title: const Text(
             "Product List",
             style: TextStyle(
-                color: Colors.white,
-                fontSize: 17,
-                fontWeight: FontWeight.bold),
+                color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
           ),
           actions: [
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 Get.to(
                   CheckoutScreen(),
                   transition: Transition.fadeIn,
                   duration: const Duration(milliseconds: 1000),
                 );
               },
-              child: Badge(
+              child: Obx(() => Badge(
                 badgeContent: Text(
                   cartController.counter.toString(),
                   style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold
-                  ),
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
-                child: const Icon(Icons.add_shopping_cart, color: Colors.white, size: 25,),
+                child: const Icon(
+                  Icons.add_shopping_cart,
+                  color: Colors.white,
+                  size: 25,
+                ),
                 badgeColor: Colors.redAccent,
                 position: BadgePosition.topStart(top: -0.3),
                 animationType: BadgeAnimationType.scale,
-              ),
+              ),)
             ),
-            const SizedBox(width: 15,),
+            const SizedBox(
+              width: 15,
+            ),
             IconButton(
-              onPressed: (){
+              onPressed: () {
                 logoutFunction();
               },
-              icon: const Icon(Icons.logout, color: Colors.white, size: 25,),
+              icon: const Icon(
+                Icons.logout,
+                color: Colors.white,
+                size: 25,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (ctx) => const OrdersDetailScreen()));
+              },
+              icon: const Icon(
+                Icons.history,
+                color: Colors.white,
+                size: 25,
+              ),
             ),
           ],
         ),
@@ -178,24 +201,27 @@ class _ProductListScreenState extends State<ProductListScreen> {
               Expanded(
                 child: FutureBuilder(
                   future: getProductsList(),
-                  builder: (context, snapshot){
-                    if(!snapshot.hasData){
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
-                    }else{
+                    } else {
                       return ListView.builder(
                         itemCount: productList.length,
-                        itemBuilder: (context, index){
+                        itemBuilder: (context, index) {
                           return Card(
                             shadowColor: Colors.grey,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
-                              side: BorderSide(color: Colors.grey.shade200, width: 2.0),
+                              side: BorderSide(
+                                  color: Colors.grey.shade200, width: 2.0),
                             ),
-                            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 8.0, vertical: 5.0),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10,  vertical: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 10),
                               child: Column(
                                 children: [
                                   ListTile(
@@ -207,20 +233,23 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                       ),
                                     ),
                                     subtitle: Text(
-                                      productList[index].price.toString() + " " +"Rs",
+                                      productList[index].price.toString() +
+                                          " " +
+                                          "Rs",
                                     ),
                                     trailing: MaterialButton(
-                                      onPressed: (){
-                                        cartController.addProduct(productList[index], context);
-                                        setState(() {
-                                          cartController.counter++;
-                                        });
+                                      onPressed: () {
+                                        cartController.addProduct(
+                                            productList[index], context);
+                                        cartController.increment();
                                       },
                                       color: Colors.blue.shade500,
-                                      child: const Text("Add to Cart", style: TextStyle(color: Colors.white),),
+                                      child: const Text(
+                                        "Add to Cart",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
                                     ),
                                   ),
-
                                 ],
                               ),
                             ),
@@ -235,45 +264,46 @@ class _ProductListScreenState extends State<ProductListScreen> {
           ),
         ),
 
-        // bottomNavigationBar: CurvedNavigationBar(
-        //   backgroundColor: Colors.white,
-        //   color: Colors.blue.shade500,
-        //   animationCurve: Curves.easeOut,
-        //   height: 50,
+        // bottomNavigationBar: BottomNavigationBar(
+        //   unselectedLabelStyle: const TextStyle(
+        //     color: Colors.black,
+        //     fontSize: 13,
+        //   ),
+        //   selectedLabelStyle: const TextStyle(
+        //       color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15),
+        //   unselectedItemColor: Colors.black,
+        //   selectedItemColor: Colors.white,
+        //   backgroundColor: Colors.blue,
+        //   currentIndex: selectedIndex,
+        //   onTap: (int index) {
+        //     setState(() {
+        //       selectedIndex = index;
+        //     });
+        //   },
         //   items: const [
-        //     Icon(Icons.person, color: Colors.white,),
-        //     Icon(Icons.home, color: Colors.white,),
-        //     Icon(Icons.history, color: Colors.white,),
+        //     BottomNavigationBarItem(
+        //       label: "Person",
+        //       icon: Icon(
+        //         Icons.person,
+        //         color: Colors.white,
+        //       ),
+        //     ),
+        //     BottomNavigationBarItem(
+        //       label: "Home",
+        //       icon: Icon(
+        //         Icons.home,
+        //         color: Colors.white,
+        //       ),
+        //     ),
+        //     BottomNavigationBarItem(
+        //       label: "History",
+        //       icon: Icon(
+        //         Icons.history,
+        //         color: Colors.white,
+        //       ),
+        //     )
         //   ],
-        //
-        // )
-        bottomNavigationBar: BottomNavigationBar(
-          unselectedLabelStyle: TextStyle(color: Colors.black, fontSize: 13,),
-          selectedLabelStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15),
-          unselectedItemColor: Colors.black,
-          selectedItemColor: Colors.white,
-          backgroundColor: Colors.blue,
-          currentIndex: selectedIndex,
-          onTap: (int index){
-            setState(() {
-              selectedIndex = index;
-            });
-          },
-          items: const [
-            BottomNavigationBarItem(
-              label: "Person",
-              icon: Icon(Icons.person, color: Colors.white,),
-            ),
-            BottomNavigationBarItem(
-              label: "Home",
-              icon: Icon(Icons.home, color: Colors.white,),
-            ),
-            BottomNavigationBarItem(
-              label: "History",
-              icon: Icon(Icons.history, color: Colors.white,),
-            )
-          ],
-        ),
+        // ),
       ),
     );
   }

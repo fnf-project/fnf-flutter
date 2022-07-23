@@ -1,63 +1,54 @@
-/// products : [{"id":1,"quantity":1},{"id":2,"quantity":1}]
-/// customerId : 101
-/// total : 1050
-/// discount : 262.5
-/// subTotal : 787.5
+/// items : [{"product":1,"quantity":1},{"product":1,"quantity":1}]
+/// total : 582.0
+/// discount : 145.5
+/// subTotal : 436.5
 
 class CartModel {
   CartModel({
-      List<Products>? products, 
-      int? customerId, 
-      int? total, 
-      double? discount, 
-      double? subTotal,}){
-    _products = products;
-    _customerId = customerId;
+    List<Items>? items,
+    double? total,
+    double? discount,
+    double? subTotal,}){
+    _items = items;
     _total = total;
     _discount = discount;
     _subTotal = subTotal;
-}
+  }
 
   CartModel.fromJson(dynamic json) {
-    if (json['products'] != null) {
-      _products = [];
-      json['products'].forEach((v) {
-        _products?.add(Products.fromJson(v));
+    if (json['items'] != null) {
+      _items = [];
+      json['items'].forEach((v) {
+        _items?.add(Items.fromJson(v));
       });
     }
-    _customerId = json['customerId'];
     _total = json['total'];
     _discount = json['discount'];
     _subTotal = json['subTotal'];
   }
-  List<Products>? _products;
-  int? _customerId;
-  int? _total;
+  List<Items>? _items;
+  double? _total;
   double? _discount;
   double? _subTotal;
-CartModel copyWith({  List<Products>? products,
-  int? customerId,
-  int? total,
-  double? discount,
-  double? subTotal,
-}) => CartModel(  products: products ?? _products,
-  customerId: customerId ?? _customerId,
-  total: total ?? _total,
-  discount: discount ?? _discount,
-  subTotal: subTotal ?? _subTotal,
-);
-  List<Products>? get products => _products;
-  int? get customerId => _customerId;
-  int? get total => _total;
+  CartModel copyWith({  List<Items>? items,
+    double? total,
+    double? discount,
+    double? subTotal,
+  }) => CartModel(  items: items ?? _items,
+    total: total ?? _total,
+    discount: discount ?? _discount,
+    subTotal: subTotal ?? _subTotal,
+  );
+  List<Items>? get items => _items;
+  double? get total => _total;
   double? get discount => _discount;
   double? get subTotal => _subTotal;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    if (_products != null) {
-      map['products'] = _products?.map((v) => v.toJson()).toList();
+    if (_items != null) {
+      map['items'] = _items?.map((v) => v.toJson()).toList();
     }
-    map['customerId'] = _customerId;
     map['total'] = _total;
     map['discount'] = _discount;
     map['subTotal'] = _subTotal;
@@ -66,34 +57,34 @@ CartModel copyWith({  List<Products>? products,
 
 }
 
-/// id : 1
+/// product : 1
 /// quantity : 1
 
-class Products {
-  Products({
-      int? id, 
-      int? quantity,}){
-    _id = id;
+class Items {
+  Items({
+    int? product,
+    int? quantity,}){
+    _product = product;
     _quantity = quantity;
-}
+  }
 
-  Products.fromJson(dynamic json) {
-    _id = json['id'];
+  Items.fromJson(dynamic json) {
+    _product = json['product'];
     _quantity = json['quantity'];
   }
-  int? _id;
+  int? _product;
   int? _quantity;
-Products copyWith({  int? id,
-  int? quantity,
-}) => Products(  id: id ?? _id,
-  quantity: quantity ?? _quantity,
-);
-  int? get id => _id;
+  Items copyWith({  int? product,
+    int? quantity,
+  }) => Items(  product: product ?? _product,
+    quantity: quantity ?? _quantity,
+  );
+  int? get product => _product;
   int? get quantity => _quantity;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['id'] = _id;
+    map['product'] = _product;
     map['quantity'] = _quantity;
     return map;
   }

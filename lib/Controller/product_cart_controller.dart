@@ -7,13 +7,16 @@ import '../Utils/shared_preference.dart';
 class CartController extends GetxController {
   // TODO Add a dictionary to store the products in the cart
   final _products = {}.obs;
-  var cartItems = <Product>[].obs;
   var subsidy = Constants.preferences?.getInt('SubsidyPercentage').obs;
   get products => _products;
 
 
 
   var counter = 0.obs;
+
+  void increment(){
+    counter +=1;
+  }
 
   // TODO For Calculating Sub Total of Products
   get productSubTotal => _products.entries.map((product) => product.key.price
@@ -33,28 +36,41 @@ class CartController extends GetxController {
 
 
 
-  var subTotal = 0.obs;
+  var subTotal = 0.0.obs;
   var subsidyAmount = 0.0.obs;
   var totalAmount = 0.0.obs;
+  var myCart;
 
   sumCart(){
    return subTotal.value = cartSubTotal;
   }
 
   discountFeeFunction() {
-    return subsidyAmount.value = sumCart() * 0.25;
+    subsidyAmount.value = sumCart() * 0.25;
+    return num.parse(subsidyAmount.value.toStringAsFixed(2));
   }
 
 
     getFinalTotal() {
-     return totalAmount.value = sumCart() - discountFeeFunction();
+     totalAmount.value = sumCart() - discountFeeFunction();
+     return num.parse(totalAmount.value.toStringAsFixed(2));
     }
 
     // TODO Add Product in the Dictionary
     void addProduct(Product product, context) {
       if (_products.containsKey(product)) {
-        cartItems.add(product);
         _products[product] += 1;
+        if(cartSubTotal > 10000){
+          Get.snackbar(
+              "MAXIMUM SUBSIDY LIMIT", "You have reached the maximum assign subsidy amount limit. You can't add more item greater than 10000 Rs",
+              titleText: const Text("MAXIMUM SUBSIDY LIMIT", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+              messageText: const Text(
+                  "You have reached the maximum assign subsidy amount limit. You can't add more item greater than 10000 Rs",
+                style: TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Colors.red
+          );
+        }
       } else {
         _products[product] = 1;
       }

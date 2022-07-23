@@ -25,7 +25,6 @@ class CheckoutScreen extends StatelessWidget {
     );
     return exitResult ?? false;
   }
-
   AlertDialog _buildExitDialog(BuildContext context) {
     return AlertDialog(
       title: const Text('Please confirm'),
@@ -93,35 +92,47 @@ class CheckoutScreen extends StatelessWidget {
   //
   // }
 
-  List<Products> cartProducts = [];
+  List<Items> cartProducts = [];
+  var token = Constants.preferences?.getString('Token');
+
 
   //
   void send()async{
     List<int> myProducts = List.from(controller.cID);
     List<int> myQuantities = List.from(controller.cQTY);
     for (var i = 0; i < myProducts.length; i++){
-      cartProducts.add(Products(id: myProducts[i], quantity: myQuantities[i]));
+      cartProducts.add(Items(product: myProducts[i], quantity: myQuantities[i]));
     }
-    print(jsonEncode(cartProducts));
     cartModel = CartModel(
-      products: cartProducts,
-      customerId: currentUserID,
+      items: cartProducts,
       total: controller.cartSubTotal,
       discount: controller.discountFeeFunction(),
       subTotal: controller.getFinalTotal(),
     );
+    print(cartModel.toJson());
     var response = await post(
-      Uri.parse('http://192.168.100.155:8844/student_post/'),
-      headers: {"Content-type": "application/json"},
-      body: jsonEncode(cartModel));
-    print(response.body);
-    print("Order Confrim Successfully");
+      Uri.parse('http://192.168.100.240:5000/api/orders/new/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Token ${token}'
+        },
+      body: jsonEncode(cartModel.toJson()));
+    var data = jsonDecode(response.body);
+    if(response.statusCode == 200){
+      print("Order Confirm Successful");
+    }else{
+      print(response.statusCode);
+    }
+    print(data);
   }
 
 
 
   @override
   Widget build(BuildContext context) {
+    String? noData = "No Item Selected";
+   var cart = 0.0;
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
       child: Scaffold(
@@ -130,9 +141,9 @@ class CheckoutScreen extends StatelessWidget {
           leading: IconButton(
             onPressed: (){
               Get.to(
-                ProductListScreen(),
+                const ProductListScreen(),
                 transition: Transition.fadeIn,
-                duration: Duration(milliseconds: 700),
+                duration: const Duration(milliseconds: 700),
               );
             },
             icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 25,),
@@ -162,10 +173,14 @@ class CheckoutScreen extends StatelessWidget {
                                   "Total",
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                                 ),
-                                Text(
-                                  "${controller.cartSubTotal}",
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                )
+                                if(controller.cartSubTotal != null)...[
+                                  Text("${controller.cartSubTotal}")
+                                ]else...[
+                                  Text("${cart}")
+                                ]
+                                // Text(
+                                //   "${controller.cartSubTotal}"
+                                // ),
                               ],
                             ),
                             const SizedBox(height: 10,),
@@ -176,10 +191,11 @@ class CheckoutScreen extends StatelessWidget {
                                   "Discount",
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                                 ),
-                                Obx(() =>  Text(
-                                  "${controller.discountFeeFunction()}",
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.blue.shade500),
-                                )),
+
+                                // Obx(() =>  Text(
+                                //   controller.discountFeeFunction().toString(),
+                                //   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.blue.shade500),
+                                // )),
                               ],
                             ),
                             const SizedBox(height: 10,),
@@ -190,26 +206,17 @@ class CheckoutScreen extends StatelessWidget {
                                   "SubTotal",
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                                 ),
-                                Text(
-                                  "${controller.getFinalTotal()}",
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                )
+
+                                // Text(
+                                //   controller.getFinalTotal().toString(),
+                                //   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                // )
                               ],
                             ),
                             const SizedBox(height: 25.0),
                             MaterialButton(
                               onPressed: () {
                                 send();
-
-                                // print(controller.cID.runtimeType);
-                                // Navigator.pop(context);
-                                // print(controller.cQTY);
-                                // print(controller.cID);
-                                // print(controller.list);
-                                // print(currentUserID);
-                                // print(myProductID.toString());
-                                // print(myProductQty.toString());
-                                // print(controller.products.name);
                               },
                               color: Colors.blue.shade500,
                               child: const Text("Confirm Order", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),

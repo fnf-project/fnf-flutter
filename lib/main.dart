@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Auth/login_screen.dart';
+import 'View/product_main_screen.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       title: 'Friend and Family',
       home: Constants.preferences?.getBool("loggedIn") == true
         ? ProductListScreen()
-          : SignInScreen(),
+          : ProductListScreen(),
     );
   }
 }

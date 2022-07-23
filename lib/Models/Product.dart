@@ -10,9 +10,8 @@ class Product {
       int? id, 
       String? name, 
       String? uom, 
-      int? weight,
-      double? subsidy,
-      int? price, 
+      double? weight,
+      double? price,
       String? expiryDate,}){
     _id = id;
     _name = name;
@@ -27,21 +26,21 @@ class Product {
     _id = json['id'];
     _name = json['name'];
     _uom = json['uom'];
-    _weight = json['weight'];
-    _price = json['price'];
+    _weight = double.parse(json['weight']);
+    _price = double.parse(json['price']);
     _expiryDate = json['expiry_date'];
   }
   int? _id;
   String? _name;
   String? _uom;
-  int? _weight;
-  int? _price;
+  double? _weight;
+  double? _price;
   String? _expiryDate;
 Product copyWith({  int? id,
   String? name,
   String? uom,
-  int? weight,
-  int? price,
+  double? weight,
+  double? price,
   String? expiryDate,
 }) => Product(  id: id ?? _id,
   name: name ?? _name,
@@ -53,8 +52,8 @@ Product copyWith({  int? id,
   int? get id => _id;
   String? get name => _name;
   String? get uom => _uom;
-  int? get weight => _weight;
-  int? get price => _price;
+  double? get weight => _weight;
+  double? get price => _price;
   String? get expiryDate => _expiryDate;
 
   Map<String, dynamic> toJson() {
