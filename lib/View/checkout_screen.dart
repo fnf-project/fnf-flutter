@@ -15,8 +15,8 @@ import 'checkout_cataglog.dart';
 class CheckoutScreen extends StatelessWidget {
   final CartController controller = Get.find();
   CartModel cartModel = CartModel();
-  CheckoutScreen({Key? key}) : super(key: key);
 
+  CheckoutScreen({Key? key}) : super(key: key);
 
   // TODO PREVENT TO CLOSE THE APP WHEN WE'LL PRESS BACK BUTTON
   Future<bool> _onWillPop(BuildContext context) async {
@@ -26,6 +26,7 @@ class CheckoutScreen extends StatelessWidget {
     );
     return exitResult ?? false;
   }
+
   AlertDialog _buildExitDialog(BuildContext context) {
     return AlertDialog(
       title: const Text('Please confirm'),
@@ -43,11 +44,8 @@ class CheckoutScreen extends StatelessWidget {
     );
   }
 
-
   // TODO GETTING USERID
   var currentUserID = Constants.preferences?.getInt('USERID');
-
-
 
   // TODO POST CART DATA ON SERVER
   // cartPost()async{
@@ -96,16 +94,17 @@ class CheckoutScreen extends StatelessWidget {
   List<Items> cartProducts = [];
   var token = Constants.preferences?.getString('Token');
 
-
   // TODO SEND DATA ON SERVER
 
   bool confirmOrderLoading = false;
-  void send(context)async{
+
+  void send(context) async {
     List<int> myProducts = List.from(controller.cID);
     List<int> myQuantities = List.from(controller.cQTY);
     cartProducts.clear();
-    for (var i = 0; i < myProducts.length; i++){
-      cartProducts.add(Items(product: myProducts[i], quantity: myQuantities[i]));
+    for (var i = 0; i < myProducts.length; i++) {
+      cartProducts
+          .add(Items(product: myProducts[i], quantity: myQuantities[i]));
     }
     cartModel = CartModel(
       items: cartProducts,
@@ -114,43 +113,42 @@ class CheckoutScreen extends StatelessWidget {
       subTotal: controller.getFinalTotal(),
     );
     print(cartModel.toJson());
-    var response = await post(
-      Uri.parse('http://192.168.100.240:5000/api/orders/new/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Token ${token}'
-        },
-      body: jsonEncode(cartModel.toJson()));
+    var response =
+        await post(Uri.parse('http://192.168.100.240:5000/api/orders/new/'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Token ${token}'
+            },
+            body: jsonEncode(cartModel.toJson()));
     var data = jsonDecode(response.body);
     print(response.statusCode);
-    if(response.statusCode != 201){
+    if (response.statusCode != 201) {
       cartProducts.clear();
       Get.snackbar(
-        "Order Confirm", "Failed",
-        titleText: const Text(
-            "Order Confirm Failed",
-            style: TextStyle(color: Colors.white, fontSize: 17)
-        ),
+        "Order",
+        "Failed",
+        titleText: const Text("Order Failed",
+            style: TextStyle(color: Colors.white, fontSize: 17)),
         backgroundColor: Colors.redAccent,
       );
-    }else{
+    } else {
       cartProducts.clear();
-      print("Order Confirm Successful");
+      print("Order Successful");
       Get.snackbar(
-        "Order Confirm", "Successfully",
-        titleText: const Text(
-            "Order Confirm Successfully",
-            style: TextStyle(color: Colors.white, fontSize: 17)
-        ),
+        "Order",
+        "Successful",
+        titleText: const Text("Order Successful",
+            style: TextStyle(color: Colors.white, fontSize: 17)),
         backgroundColor: Colors.green,
       );
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ProductMainScreen()));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ProductMainScreen()));
     }
     print(data);
   }
 
-
+  var isEnabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -162,14 +160,18 @@ class CheckoutScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.blue.shade500,
           leading: IconButton(
-            onPressed: (){
+            onPressed: () {
               Get.to(
                 const ProductMainScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 700),
               );
             },
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 25,),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+              size: 25,
+            ),
           ),
           title: const Text(
             "Checkout",
@@ -184,83 +186,130 @@ class CheckoutScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 90),
                 child: MaterialButton(
-                  onPressed: (){
+                  onPressed: () {
+                    List<int> cartItemIDs = List.from(controller.cID);
+                    if (cartItemIDs.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Cart is empty"),
+                        ),
+                      );
+                      return;
+                    }
                     showDialog(
                         context: context,
                         builder: (_) => AlertDialog(
-                          actions: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  "Total",
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                              actions: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      "Total",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
+                                    // if(controller.cartSubTotal != null)...[
+                                    //   Text("${controller.cartSubTotal}")
+                                    // ]else...[
+                                    //   Text("${cart}")
+                                    // ]
+                                    Text("${controller.cartSubTotal}"),
+                                  ],
                                 ),
-                                // if(controller.cartSubTotal != null)...[
-                                //   Text("${controller.cartSubTotal}")
-                                // ]else...[
-                                //   Text("${cart}")
-                                // ]
-                                Text(
-                                  "${controller.cartSubTotal}"
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      "Discount",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
+                                    Obx(() => Text(
+                                          controller
+                                              .discountFeeFunction()
+                                              .toString(),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20,
+                                              color: Colors.blue.shade500),
+                                        )),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      "SubTotal",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
+                                    Text(
+                                      controller.getFinalTotal().toString(),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(height: 25.0),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    MaterialButton(
+                                      onPressed: () {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    CheckoutScreen()));
+                                      },
+                                      color: Colors.redAccent,
+                                      child: const Text(
+                                        "Go Back",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    MaterialButton(
+                                      onPressed: !isEnabled
+                                          ? () {
+                                              isEnabled = true;
+                                              send(context);
+                                            }
+                                          : null,
+                                      color: Colors.blue.shade500,
+                                      child: const Text(
+                                        "Confirm Order",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    )
+                                  ],
                                 ),
                               ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  "Discount",
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                                ),
-                                Obx(() =>  Text(
-                                  controller.discountFeeFunction().toString(),
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.blue.shade500),
-                                )),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  "SubTotal",
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                                ),
-                                Text(
-                                  controller.getFinalTotal().toString(),
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                )
-                              ],
-                            ),
-                            const SizedBox(height: 25.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                MaterialButton(
-                                  onPressed: () {
-                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CheckoutScreen()));
-                                  },
-                                  color: Colors.redAccent,
-                                  child: const Text("Go Back", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                                ),
-                                MaterialButton(
-                                  onPressed: () {
-                                    send(context);
-                                  },
-                                  color: Colors.blue.shade500,
-                                  child: const Text("Confirm Order", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                                )
-                              ],
-                            )
-,
-                          ],
-                        )
-                    );
+                            ));
                   },
                   color: Colors.blue.shade500,
-                  child: const Text("Cart Total", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                  child: const Text(
+                    "Cart Total",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
                 ),
               )
             ],
@@ -270,5 +319,3 @@ class CheckoutScreen extends StatelessWidget {
     );
   }
 }
-
-
