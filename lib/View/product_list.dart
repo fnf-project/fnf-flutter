@@ -136,6 +136,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    List<int> buttonEnabledDisabled = List.from(cartController.cID);
+
     print("Hello World");
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
@@ -152,20 +155,20 @@ class _ProductListScreenState extends State<ProductListScreen> {
           actions: [
             GestureDetector(
                 onTap: () {
-                  List<int> abc = List.from(cartController.cID);
-                  if (abc.isEmpty) {
+                  List<int> cartItemIDs = List.from(cartController.cID);
+                  if (cartItemIDs.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Cart is empty"),
                       ),
                     );
-                  } else {
-                    Get.to(
-                      CheckoutScreen(),
-                      transition: Transition.fadeIn,
-                      duration: const Duration(milliseconds: 1000),
-                    );
+                    return;
                   }
+                  Get.to(
+                    CheckoutScreen(),
+                    transition: Transition.fadeIn,
+                    duration: const Duration(milliseconds: 500),
+                  );
                 },
                 child: Obx(
                   () => Badge(

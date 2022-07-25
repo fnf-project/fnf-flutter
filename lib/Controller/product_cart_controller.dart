@@ -18,6 +18,14 @@ class CartController extends GetxController {
     counter +=1;
   }
 
+  clearController(){
+    counter.value = 0;
+    // products.close();
+    products.clear();
+  }
+
+
+
   // TODO For Calculating Sub Total of Products
   get productSubTotal => _products.entries.map((product) => product.key.price
       * product.value);
@@ -40,6 +48,8 @@ class CartController extends GetxController {
   var subsidyAmount = 0.0.obs;
   var totalAmount = 0.0.obs;
   var myCart;
+
+
 
   sumCart(){
    return subTotal.value = cartSubTotal;

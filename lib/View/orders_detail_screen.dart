@@ -240,8 +240,6 @@ class OrdersDetailScreen extends StatefulWidget {
   State<OrdersDetailScreen> createState() => _OrdersDetailScreenState();
 }
 
-// TODO GETTING TOKEN
-var orderToken = Constants.preferences?.getString('Token');
 
 // var data;
 // Future<void> getPostApi() async{
@@ -270,13 +268,15 @@ class _OrdersDetailScreenState extends State<OrdersDetailScreen> {
   List<OrdersDetailModel> userList = [];
   List<Product> userList1 = [];
 
+  // TODO GETTING TOKEN
+  var orderToken = Constants.preferences?.getString('Token');
   Future <List<OrdersDetailModel>> getUserApi()async{
     final response = await http.get(
       Uri.parse('http://192.168.100.240:5000/api/myorders/'),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json',
-        'Authorization': 'Token ${orderToken}'
+        'Authorization': 'Token $orderToken'
       },
     );
     var data = jsonDecode(response.body.toString());
@@ -298,6 +298,11 @@ class _OrdersDetailScreenState extends State<OrdersDetailScreen> {
       userList.clear();
     });
   }
+  @override
+  void initState() {
+    getUserApi();
+    super.initState();
+  }
 
 
 
@@ -306,6 +311,7 @@ class _OrdersDetailScreenState extends State<OrdersDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue.shade500,
+        automaticallyImplyLeading: false,
         title: const Text(
           "Orders Details",
           style: TextStyle(
