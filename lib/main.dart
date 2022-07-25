@@ -23,8 +23,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Friend and Family',
       home: Constants.preferences?.getBool("loggedIn") == true
-        ? ProductListScreen()
-          : ProductListScreen(),
+        ? ProductMainScreen()
+          : SignInScreen(),
     );
   }
 }

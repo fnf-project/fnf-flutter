@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fnf_project/View/product_list.dart';
+import 'package:fnf_project/View/product_main_screen.dart';
 import 'package:get/route_manager.dart';
 import 'package:hovering/hovering.dart';
 import 'dart:convert';
@@ -51,7 +52,7 @@ class _SignInScreenState extends State<SignInScreen> {
         setState(() {
           isLoading = true;
         });
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProductListScreen(
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProductMainScreen(
         )));
       }else{
         print("Failed");
@@ -104,12 +105,13 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () => _onWillPop(context),
-      child: isLoading ? CircularProgressIndicator() : Scaffold(
+      child: isLoading == true ?  CircularProgressIndicator() : Scaffold(
         backgroundColor: Colors.white,
         body: Form(
           key: formKey,
           child: ListView(
             children: [
+              const SizedBox(height: 40,),
               Image.asset("assets/images/login.gif", height: 250,),
               const SizedBox(height: 50,),
               Padding(
@@ -158,30 +160,30 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10.0,),
-              GestureDetector(
-                onTap: (){},
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 14.0),
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: Container(
-                      padding: const EdgeInsets.only(bottom: 1.0),
-                      child: Text(
-                        "Forgot Password?",
-                        style: TextStyle(
-                          color: Colors.blue.shade500,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // const SizedBox(height: 10.0,),
+              // GestureDetector(
+              //   onTap: (){},
+              //   child: Padding(
+              //     padding: const EdgeInsets.only(right: 14.0),
+              //     child: Align(
+              //       alignment: Alignment.topRight,
+              //       child: Container(
+              //         padding: const EdgeInsets.only(bottom: 1.0),
+              //         child: Text(
+              //           "Forgot Password?",
+              //           style: TextStyle(
+              //             color: Colors.blue.shade500,
+              //             fontWeight: FontWeight.w700,
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
               const SizedBox(
-                height: 25.0,
+                height: 50.0,
               ),
-              Padding(
+              isLoading ? CircularProgressIndicator() : Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 60),
                 child: MaterialButton(
                   onPressed: (){
@@ -204,30 +206,30 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: const Text("LOG IN", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
                 ),
               ),
-              const SizedBox(
-                height: 35.0,
-              ),
-              const Padding(
-                padding: EdgeInsets.only(left: 45.0),
-                child: Text(
-                  "If you don't have account! Register Yourself",
-                  style: TextStyle(color: Colors.black38, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const SizedBox(height: 25.0,),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 60),
-                child: MaterialButton(
-                  onPressed: (){},
-                  height: 50,
-                  color: Colors.blue.shade500,
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(color: Colors.grey.shade200, width: 1.4),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text("SIGN UP", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
-                ),
-              ),
+              // const SizedBox(
+              //   height: 35.0,
+              // ),
+              // const Padding(
+              //   padding: EdgeInsets.only(left: 45.0),
+              //   child: Text(
+              //     "If you don't have account! Register Yourself",
+              //     style: TextStyle(color: Colors.black38, fontWeight: FontWeight.bold),
+              //   ),
+              // ),
+              // const SizedBox(height: 25.0,),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 60),
+              //   child: MaterialButton(
+              //     onPressed: (){},
+              //     height: 50,
+              //     color: Colors.blue.shade500,
+              //     shape: RoundedRectangleBorder(
+              //       side: BorderSide(color: Colors.grey.shade200, width: 1.4),
+              //       borderRadius: BorderRadius.circular(12),
+              //     ),
+              //     child: const Text("SIGN UP", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
+              //   ),
+              // ),
             ],
           ),
         ),

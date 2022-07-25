@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fnf_project/Models/Product.dart';
 import 'package:fnf_project/View/product_list.dart';
+import 'package:fnf_project/View/product_main_screen.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart';
@@ -15,8 +16,8 @@ class CheckoutScreen extends StatelessWidget {
   final CartController controller = Get.find();
   CartModel cartModel = CartModel();
   CheckoutScreen({Key? key}) : super(key: key);
-  
-  
+
+
   // TODO PREVENT TO CLOSE THE APP WHEN WE'LL PRESS BACK BUTTON
   Future<bool> _onWillPop(BuildContext context) async {
     bool? exitResult = await showDialog(
@@ -96,10 +97,13 @@ class CheckoutScreen extends StatelessWidget {
   var token = Constants.preferences?.getString('Token');
 
 
-  //
-  void send()async{
+  // TODO SEND DATA ON SERVER
+
+  bool confirmOrderLoading = false;
+  void send(context)async{
     List<int> myProducts = List.from(controller.cID);
     List<int> myQuantities = List.from(controller.cQTY);
+    cartProducts.clear();
     for (var i = 0; i < myProducts.length; i++){
       cartProducts.add(Items(product: myProducts[i], quantity: myQuantities[i]));
     }
@@ -119,10 +123,29 @@ class CheckoutScreen extends StatelessWidget {
         },
       body: jsonEncode(cartModel.toJson()));
     var data = jsonDecode(response.body);
-    if(response.statusCode == 200){
-      print("Order Confirm Successful");
+    print(response.statusCode);
+    if(response.statusCode != 201){
+      cartProducts.clear();
+      Get.snackbar(
+        "Order Confirm", "Failed",
+        titleText: const Text(
+            "Order Confirm Failed",
+            style: TextStyle(color: Colors.white, fontSize: 17)
+        ),
+        backgroundColor: Colors.redAccent,
+      );
     }else{
-      print(response.statusCode);
+      cartProducts.clear();
+      print("Order Confirm Successful");
+      Get.snackbar(
+        "Order Confirm", "Successfully",
+        titleText: const Text(
+            "Order Confirm Successfully",
+            style: TextStyle(color: Colors.white, fontSize: 17)
+        ),
+        backgroundColor: Colors.green,
+      );
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ProductMainScreen()));
     }
     print(data);
   }
@@ -131,17 +154,17 @@ class CheckoutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? noData = "No Item Selected";
-   var cart = 0.0;
     return WillPopScope(
-      onWillPop: () => _onWillPop(context),
+      onWillPop: () async {
+        return Navigator.canPop(context);
+      },
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blue.shade500,
           leading: IconButton(
             onPressed: (){
               Get.to(
-                const ProductListScreen(),
+                const ProductMainScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 700),
               );
@@ -173,14 +196,14 @@ class CheckoutScreen extends StatelessWidget {
                                   "Total",
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                                 ),
-                                if(controller.cartSubTotal != null)...[
-                                  Text("${controller.cartSubTotal}")
-                                ]else...[
-                                  Text("${cart}")
-                                ]
-                                // Text(
-                                //   "${controller.cartSubTotal}"
-                                // ),
+                                // if(controller.cartSubTotal != null)...[
+                                //   Text("${controller.cartSubTotal}")
+                                // ]else...[
+                                //   Text("${cart}")
+                                // ]
+                                Text(
+                                  "${controller.cartSubTotal}"
+                                ),
                               ],
                             ),
                             const SizedBox(height: 10,),
@@ -191,11 +214,10 @@ class CheckoutScreen extends StatelessWidget {
                                   "Discount",
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                                 ),
-
-                                // Obx(() =>  Text(
-                                //   controller.discountFeeFunction().toString(),
-                                //   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.blue.shade500),
-                                // )),
+                                Obx(() =>  Text(
+                                  controller.discountFeeFunction().toString(),
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.blue.shade500),
+                                )),
                               ],
                             ),
                             const SizedBox(height: 10,),
@@ -206,21 +228,33 @@ class CheckoutScreen extends StatelessWidget {
                                   "SubTotal",
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                                 ),
-
-                                // Text(
-                                //   controller.getFinalTotal().toString(),
-                                //   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                // )
+                                Text(
+                                  controller.getFinalTotal().toString(),
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                )
                               ],
                             ),
                             const SizedBox(height: 25.0),
-                            MaterialButton(
-                              onPressed: () {
-                                send();
-                              },
-                              color: Colors.blue.shade500,
-                              child: const Text("Confirm Order", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                MaterialButton(
+                                  onPressed: () {
+                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CheckoutScreen()));
+                                  },
+                                  color: Colors.redAccent,
+                                  child: const Text("Go Back", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                                ),
+                                MaterialButton(
+                                  onPressed: () {
+                                    send(context);
+                                  },
+                                  color: Colors.blue.shade500,
+                                  child: const Text("Confirm Order", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                                )
+                              ],
                             )
+,
                           ],
                         )
                     );

@@ -13,7 +13,7 @@ import 'package:fnf_project/View/orders_detail_screen.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({Key? key}) : super(key: key);
@@ -31,6 +31,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   // TODO GETTING THE PRODUCTS FROM SERVER
   var data;
   List<Product> productList = [];
+
   Future<List<Product>> getProductsList() async {
     final response = await http.get(
       Uri.parse('http://192.168.100.240:5000/api/products/'),
@@ -42,8 +43,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
     data = jsonDecode(response.body.toString());
     if (response.statusCode == 200) {
+      productList.clear();
       for (Map i in data) {
-          productList.add(Product.fromJson(i));
+        productList.add(Product.fromJson(i));
       }
       return productList;
     } else {
@@ -60,6 +62,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
     return exitResult ?? false;
   }
+
   AlertDialog _buildExitDialog(BuildContext context) {
     return AlertDialog(
       title: const Text('Please confirm'),
@@ -140,6 +143,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.blue.shade500,
+          automaticallyImplyLeading: false,
           title: const Text(
             "Product List",
             style: TextStyle(
@@ -147,29 +151,39 @@ class _ProductListScreenState extends State<ProductListScreen> {
           ),
           actions: [
             GestureDetector(
-              onTap: () {
-                Get.to(
-                  CheckoutScreen(),
-                  transition: Transition.fadeIn,
-                  duration: const Duration(milliseconds: 1000),
-                );
-              },
-              child: Obx(() => Badge(
-                badgeContent: Text(
-                  cartController.counter.toString(),
-                  style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-                child: const Icon(
-                  Icons.add_shopping_cart,
-                  color: Colors.white,
-                  size: 25,
-                ),
-                badgeColor: Colors.redAccent,
-                position: BadgePosition.topStart(top: -0.3),
-                animationType: BadgeAnimationType.scale,
-              ),)
-            ),
+                onTap: () {
+                  List<int> abc = List.from(cartController.cID);
+                  if (abc.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Cart is empty"),
+                      ),
+                    );
+                  } else {
+                    Get.to(
+                      CheckoutScreen(),
+                      transition: Transition.fadeIn,
+                      duration: const Duration(milliseconds: 1000),
+                    );
+                  }
+                },
+                child: Obx(
+                  () => Badge(
+                    badgeContent: Text(
+                      cartController.counter.toString(),
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    child: const Icon(
+                      Icons.add_shopping_cart,
+                      color: Colors.white,
+                      size: 25,
+                    ),
+                    badgeColor: Colors.redAccent,
+                    position: BadgePosition.topStart(top: -0.3),
+                    animationType: BadgeAnimationType.scale,
+                  ),
+                )),
             const SizedBox(
               width: 15,
             ),
@@ -179,16 +193,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
               },
               icon: const Icon(
                 Icons.logout,
-                color: Colors.white,
-                size: 25,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (ctx) => const OrdersDetailScreen()));
-              },
-              icon: const Icon(
-                Icons.history,
                 color: Colors.white,
                 size: 25,
               ),
